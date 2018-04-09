@@ -1,0 +1,111 @@
+.Dd Apr 8, 2018
+.Dt cook 1
+.Os
+.Sh NAME
+cook
+.Nd bash make
+.Sh SYNOPSIS
+Usage: cook
+.Op Ar -f file
+.Op Ar -n template
+.Sh DESCRIPTION
+.Nm cook
+is a easy to use, tiny, minimalistic, intuitive, simple, vegan, gluten-free, and non-compatible with make, bash replacement for the make tool.
+.Nm
+Doesn't force you to use a specific indentation style on your compilation recipes, neither require you to learn a new syntax, you only need a little familiarity with bash to make full use of
+.Nm .
+And if if you aren't familiar with bash, there's a
+\fIBASH\fR
+section below with all the information you will need to get you started with
+.Nm .
+
+The first thing
+.Nm
+does when you run it, is search for a file called recipe on the current working directory. If the recipe file is not called recipe, you can tell cook which file to use with the -f flag.
+
+If there's no recipe files on the current working directory, you can run
+.Nm
+\fI-n template\fR, where
+\fItemplate\fR
+is a file located at $HOME/.config/cook/. If cook finds the template file on the config directory, it will copy the file on the current working directory.
+
+.Pp
+.Nm
+is nothing but a ordinary bash script with a handful of useful bash functions to automatize your compiling process. So far,
+.Nm
+contains only 2 functions. Once
+.Nm
+finds the recipe file, it will execute the recipe within the
+.Nm
+environment, making it's function available to your recipe. The cook functions are:
+
+.Pp
+.Nm contains
+.Ar word argarr
+        Checks if argarr contains the given word. word should not contain any space, and argarr is usually $@, which is the whole list of arguments that
+.Nm
+was called with. $@ is the same as argv is in C. This is useful to set variables. You can call
+.Nm
+with different arguments to compile your program with different compilers, or set your #defines, etc.
+
+.Nm check
+.Ar bin src [src...]
+        checks if dependencies need to be recompiled. check takes at least two arguments. The first is the file that depends on the subsequent file(s). If at least one of the source files is older than the first file, the check returns true, 0 in bash, and the next command on the chain is executed.
+
+.Sh RECIPE
+A cook recipe is just a bash script. Here's an example of a recipe for a c program. If you don't understand how it is supposed to work or you're unfamiliar with bash, take a look at the \fIBASH\fR section of this manual.
+
+        # Compilation variables
+            CC="clang"
+        OUTDIR="bin"
+        OUTPUT="line_clg"
+        SRCDIR="src"
+        OBJDIR="obj"
+        MANDIR="/usr/share/man/man1"
+        CFLAGS="-Wall -Wpedantic -Werror -Os -g"
+          LIBS="-lm"
+        INSDIR="/usr/local/bin"
+        FPERMS="755"
+
+        # if cook was called with the arguments gcc or
+        # tcc, change the variable CC.
+        contains "gcc" $@ && CC=gcc && OUTPUT=line_gcc
+        contains "tcc" $@ && CC=tcc && OUTPUT=line_tcc
+
+        check $OUTDIR/$OUTPUT src/line.c &&\\
+            $CC $CFLAGS -o $OUTDIR/$OUTPUT $DEPS $LIBS
+
+.Sh BASH
+The only thing you need to know to start cooking, is how to declare variables in bash, and how to use conditional expressions. You can put any number of space characters before your variable declaration, but you can't put spaces between the variable name and the value.
+
+        # You cannot do this
+        CC = gcc
+
+        # but you can do this
+        CC=gcc
+        # and this, for alignment purposes
+            CC=gcc
+
+In bash you can link a chain of commands, where each command is executed only if the previous command returns true, success, which is 0 in bash. You link this chain of commands with '&&'. Example:
+
+        check bin src1.c src2.c && $CC -o bin src1.c src2.c
+
+These chains can get pretty long pretty fast, and a new line in bash tells bash to start executing the command. But you can "escape" this execution with a back-slash, like this:
+
+        check bin src1.c src2.c \\
+            && $CC -o bin src1.c src2.c
+
+And that's it! That's all you need to know to start cooking your programs.
+
+Be aware that it is your responsability to declare your recipes in the right order.
+
+.Sh ENVIRONMENT
+.Pp
+.Nm
+Doesn't make use of environment variables yet.
+.Sh BUGS
+There's probably a couple of bugs here and there since this the 0.1 version. If you find a bug feel free to report it as an issue on the official github repository, or send  me a patch via email.
+.Sh AUTHOR
+.An Ricardo Mazeto Aq Mt maz@cock.li
+.Sh HOME
+.Em https://cook.github.io

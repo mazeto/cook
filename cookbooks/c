@@ -1,0 +1,93 @@
+# If the user called **bake** with the argument **help**, it's pretty convenient and it is a good practice to explain how to compile your program, which flags he can turn on and/or off for plugins, macros, etc.
+
+    contains "help" $@ && echo -en                  \
+    "Put your help text here\n"                     \
+    "Ex.:\n\n"                                      \
+    "My super useful program v0.1\n\n"              \
+    "    Build with:\n"                             \
+    "        bake program [FEATURES] [TESTSET]\n\n" \
+        && exit 0
+
+### clear
+    contains "clear" $@ && echo -en \
+    "Put cleaning commands here\n"\
+    "Ex.:\n\n"\
+    "    test \$(ls bin | wc -l) -ne 0  &&\\ \n"\
+    "        rm -rfv bin/* && exit 0\n\n"\
+    && exit 0
+
+### Uninstall
+
+# ERROR. Unfortunetely the grep inside dep match the 'install'
+# on "uninstall", so "uninstall" comes 1st here.
+# This s a minor fix to a minor *bug*.
+
+    contains "uninstall" $@ &&\
+    echo -en \
+    "Put your uninstall commands here\n"\
+    "ex.:\n\n"\
+    "    chmod \$MOD \$BINDIR/\$PROG &&\\ \n"\
+    "    rm \$INSDIR/\$PROG &&\\ \n"\
+    "    rm \$MANDIR/\$MAN &&\\ \n"\
+    "    exit 0\n" &&\
+    exit 0
+
+### Install
+
+    contains "install" $@ &&\
+    echo -en \
+    "Put your install commands here\n"\
+    "ex.:\n\n"\
+    "    chmod \$MOD \$BINDIR/\$PROG &&\\ \n"\
+    "    cp -i \$BINDIR/\$PROG \$INSDIR/\$PROG &&\\ \n"\
+    "    cp -i \$DOCDIR/\$MAN \$MANDIR/\$MAN &&\\ \n"\
+    "    exit 0\n" &&\
+    exit 0
+
+### Stops before compilation
+    contains "stop" $@ && exit 0
+
+### Variables
+        CC="" # c compiler
+    OUTDIR="" # output directory
+    OUTPUT="" # the final executable(s)
+    SRCDIR="" # source directory
+    ASMDIR="" # assembly directory
+    OBJDIR="" # object directory
+    MANDIR="" # usually "/usr/share/man/man1"
+    CFLAGS="" # pretty self-explanatory
+      LIBS="" # libraries to link
+    INSDIR="" # usually "/usr/local/bin" or "/bin/"
+    FPERMS="" # usually 755
+       ASM="" # list of assembly files
+       OBJ="" # list of object code files
+       SRC="main.src
+            foo.src
+            bar.src
+            class.src"
+
+### Compile source to assembly
+    for s in $SRC; do
+        asm=$(echo $s | sed "s/\.c/\.a/g")
+        $ASM="$ASM $asm" # append to ASM
+        check $ASMDIR/$a $s &&\
+            $CC -S $CFLAGS -o $ASMDIR/$asm $s $LIBS
+    done
+
+### Compile assembly to object files
+    for a in $ASM; do
+        obj=$(echo $a | sed "s/\.a/\.o/g")
+        $OBJ="$OBJ $obj" # append to ASM
+        check $OBJDIR/$obj $a &&\
+            $CC -c $CFLAGS -o $OBJDIR/$obj $a $LIBS
+    done
+
+### Compile executable
+    check $OUTDIR/$OUTPUT $OBJ &&\
+        $CC $CFLAGS -o $OUTDIR/$OUTPUT $OBJ $LIBS
+
+### Run
+    contains "run" $@                        &&\
+        $OUTDIR/$OUTPUT > img/line.ff        &&\
+        ff2png < img/line.ff > img/line.png  &&\
+        fbi -a -f "xos4 Terminus-18" img/line.png 2> /dev/null
