@@ -51,6 +51,16 @@ TODO list:
 Run **`cook -n [c|scheme|forth]`** and
 get a free template recipe of your choice on your cwd!
 
+## Install
+
+There's no install command available yet.
+
+    cp cook.sh /usr/local/bin/cook
+    gzip -c cook.1 > cook.1.gz
+    cp cook.1.gz /usr/share/man/man1/
+    mkdir ~/.config/cook
+    cp cookbooks/* ~/.config/cook
+
 ## LICENCE
 
 This is free and unencumbered software released into the public domain.
