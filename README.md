@@ -29,7 +29,7 @@ TODO list:
 
 ## Recipe
 
-Run **`cake -n [c|scheme|forth]`** and
+Run **`cook -n [c|scheme|forth]`** and
 get a free template recipe of your choice on your cwd!
 
 ## Install
