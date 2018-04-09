@@ -3,9 +3,9 @@
 
 ## A bash replacement for make
 
-Cook is supposed to be a simple build tool. As simple as possible. Cook is just a bash script sitting on your path waiting to cook you some delicious software. When you run cook, it searches the current working directory for a file called recipe. If the recipe file is found, cook executes the recipe. If cook can't find the recipe, it returns an error. You can also tell cook which repice to read, with the `-f <recipe>` option. Or get a brand new free recipe template with the `-n <language>` option, which makes cook look for a template recipe on the configuration directory, "~/.config/cook" by default.
+Cook is supposed to be a simple build tool. As simple as possible. Cook is just a bash script sitting on your path waiting to cook you some delicious software. When you run cook, it searches the current working directory for a file called cookbook. If the cookbook file is found, cook executes the cookbook. If cook can't find the cookbook, it returns an error. You can also tell cook which cookbook to read, with the `-f <cookbook>` option. Or get a brand new free cookbook template with the `-n <language>` option, which makes cook look for a template cookbook on the configuration directory, "~/.config/cook" by default.
 
-Before executing your recipe, cook makes available to your recipe two bash functions, **contains** and **check**.
+Before executing your cookbook, cook makes available to your cookbook two bash functions, **contains** and **check**.
 
     contains <word> $@
 
@@ -19,7 +19,7 @@ The other function is check. It takes at least two arguments. The first is the n
 
     check bin a.c b.c c.c
 
-check returns true if the file bin don't exist or if it is older than any of the other files. check also sets a variable called DEPS, for dependencies, to be used in your compilation command. Therefore check is supposed to be used on your recipes like this:
+check returns true if the file bin don't exist or if it is older than any of the other files. check also sets a variable called DEPS, for dependencies, to be used in your compilation command. Therefore check is supposed to be used on your cookbooks like this:
 
     check bin a.c b.c c.c \
       && $CC -o bin $DEPS
@@ -49,7 +49,7 @@ TODO list:
 ## Recipe
 
 Run **`cook -n [c|scheme|forth]`** and
-get a free template recipe of your choice on your cwd!
+get a free template cookbook of your choice on your cwd!
 
 ## Install
 
