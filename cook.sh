@@ -11,7 +11,7 @@ CFGDIR="$HOME/.config/cook"
 # DEPS is a useful variable that holds a list of
 # all dependencies, so you can write
 # check bin src1.c src2.c src3.c && $CC -o bin $DEPS
-# Usage: dep executable bar.c foo.c lib.c etc.c
+# Usage: check executable bar.c foo.c lib.c etc.c
 
 check(){
     # resets the DEPS list
@@ -52,28 +52,26 @@ contains(){
     return 1
 }
 
-# handles cook
-[[ "$#" == "0" ]]     && \
-[[ -e "./cookbook" ]] && \
-source "./cookbook"   && \
-exit 0
-# if
-
 # handles cook -f file
-[[ "$#" == "2"  ]] && \
-[[ "$1" == "-f" ]] && \
-[[ -e "$2"      ]] && \
-source "$2"        && \
+[[ "$#" == "2"  ]] &&\
+[[ "$1" == "-f" ]] &&\
+[[ -e "$2"      ]] &&\
+. "$2"             &&\
 exit 0
 
 # handles cook -n template
-[[ "$#" == "2" ]]     && \
-[[ "$1" == "-n" ]]    && \
-[[ -e "$CFGDIR/$2" ]] && \
-cp "$CFGDIR/$2" "."   && \
+[[ "$#" == "2" ]]          &&\
+[[ "$1" == "-n" ]]         &&\
+[[ -e "$CFGDIR/$2" ]]      &&\
+cp "$CFGDIR/$2" "cookbook" &&\
 exit 0
 
-# help
-[[ "$#" == "0" ]] &&\
-echo -en "usage:\n\tcook [-f cookbook] [-n template]\n"
-exit 1
+# handles cook [args]
+[[ -e "./cookbook" ]]     &&\
+echo "running ./cookbook" &&\
+. "./cookbook" $@         &&\
+exit 0
+
+# handles everything else
+echo -en "usage:\n\tcook [-f cookbook] [-n template]\n" &&\
+exit 0
